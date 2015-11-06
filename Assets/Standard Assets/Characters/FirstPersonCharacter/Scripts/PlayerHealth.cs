@@ -36,7 +36,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (Input.GetKeyDown("space"))
         {
-            TakeDamage(10);
+            //TakeDamage(10);
         }
             
         if (damaged)

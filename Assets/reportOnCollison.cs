@@ -24,7 +24,7 @@ public class reportOnCollison : MonoBehaviour
         
         colorName = gameObject.transform.name.Split(' ');
         
-        isValidMove = puzzleController.checkValidity(colorName[0]);
+//        isValidMove = puzzleController.checkValidity(colorName[0]);
         print(colorName[0] + " is " + isValidMove);
         reaction(isValidMove);
     }

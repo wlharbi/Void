@@ -3,34 +3,32 @@ using System.Collections;
 
 public class reportOnCollison : MonoBehaviour 
 {
-    public Renderer rend;
+    private Renderer rend;
 
-    private bool isValidMove;
-    string[] colorName;
-    GameObject puzzleController;
+    private string[] colorName;
+    PuzzleControl01 puzzleController;
     private Material oldMaterial;
-    private Material newMaterial = Resources.Load("Decrepit Dungeon/Materials/CorrectMove", typeof(Material)) as Material;
 
     void start()
     {
         rend = GetComponent<Renderer>();
         rend.enabled = true;
         oldMaterial = rend.material;
-        puzzleController = gameObject.transform.parent.gameObject;
+        
     }
 
     void OnTriggerEnter(Collider other)
     {
-        
-        colorName = gameObject.transform.name.Split(' ');
-        
-//        isValidMove = puzzleController.checkValidity(colorName[0]);
-        print(colorName[0] + " is " + isValidMove);
-        reaction(isValidMove);
+        puzzleController = transform.parent.gameObject.GetComponent("PuzzleControl01") as PuzzleControl01;
+        puzzleController.checkValidity(gameObject.transform.name);
     }
 
-    public void reaction(bool isValid)
+    public void reaction()
     {
-        rend.sharedMaterial = newMaterial;
+        if (true)
+        {
+            //rend.sharedMaterial = newMaterial;
+        }
+        
     }
 }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class PuzzleControl01 : MonoBehaviour {
 
     private bool isFinishedCorrectly = false;
-    private bool isFailed = false;
+    private bool isPassedByEntrance = false;
     private string fullChildObjectName;
     private List<string> trampledObjects;
 
@@ -14,88 +14,84 @@ public class PuzzleControl01 : MonoBehaviour {
     private string firstColor = "Blue";
     private string secondColor = "Green";
     private string thirdColor = "Red";
-    private string trapColor = "Black";
+    //private string trapColor = "Black";
 
     private string lastColor = null;
 
+    [SerializeField]
     private Material firstMaterial;
+    [SerializeField]
     private Material secondMaterial;
+    [SerializeField]
     private Material thirdMaterial;
-
+    [SerializeField]
     private Material correctMoveMaterial;
     // Use this for initialization
     void Start () {
         trampledObjects = new List<string>();
-        firstMaterial = Resources.Load("Decrepit Dungeon/Materials/Blue", typeof(Material)) as Material;
-        secondMaterial = Resources.Load("Decrepit Dungeon/Materials/Green", typeof(Material)) as Material;
-        thirdMaterial = Resources.Load("Decrepit Dungeon/Materials/Red", typeof(Material)) as Material;
-
-        correctMoveMaterial = Resources.Load("Decrepit Dungeon/Materials/CorrectMove.mat", typeof(Material)) as Material;
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-    
-    public void checkValidity(string destinationColor)
-    {
-        fullChildObjectName = destinationColor;
-        trampledObjects.Add(fullChildObjectName);
-        destinationColor = destinationColor.Split(' ')[0];
 
-        print("Full Object name is: " + fullChildObjectName);
-        if (lastColor == null)
+    public void checkValidity(string destinationObject)
+    {
+        if (destinationObject=="Entrance")
         {
-            if (destinationColor != firstColor) return;
-            lastColor = destinationColor;
+            if (trampledObjects.Count > 0) fail();
+            isPassedByEntrance = true;
+            return;
+        }
+        if (destinationObject.Contains("Border"))
+        {
+            if(destinationObject=="TopBorder" && trampledObjects[trampledObjects.Count - 1].Contains("Blue"))
+            {
+                win();
+                return;
+            }
+            fail();
+            return;
+        }
+
+        fullChildObjectName = destinationObject;
+        trampledObjects.Add(fullChildObjectName);
+        destinationObject = destinationObject.Split(' ')[0];
+        //print("Full Object name is: " + fullChildObjectName);
+        
+        if (lastColor == null && isPassedByEntrance)
+        {
+            if (destinationObject != firstColor) return;
+            lastColor = destinationObject;
             correctMove(fullChildObjectName);
             return;
         }
         else if (lastColor == firstColor)
         {
-            if (destinationColor == firstColor || destinationColor == thirdColor)
-            {
-                fail();
-                return;
-            }
+            if (destinationObject == secondColor)
+                correctMove(fullChildObjectName);
             else
-            {
-                correctMove(destinationColor);
-                return;
-            }
+                fail();
+            return;
         }
         else if (lastColor == secondColor)
         {
-            if (destinationColor == secondColor || destinationColor == firstColor)
-            {
-                fail();
-                return;
-            }
-            else
-            {
+            if (destinationObject == thirdColor)
                 correctMove(fullChildObjectName);
-                return;
-            }
+            else
+                fail();
+            return;
         }
         else if (lastColor == thirdColor)
         {
-            if (destinationColor == thirdColor || destinationColor == secondColor)
-            {
-                fail();
-                return;
-            }
-            else
-            {
+            if (destinationObject == firstColor)
                 correctMove(fullChildObjectName);
-                return;
-            }
+            else
+                fail();
+            return;
         }
+        else
+            fail();
     }
 
     public void fail()
-    {
-        lastColor = null;
+    {  
         for(int i=0; i< trampledObjects.Count; i++)
         {
             GameObject childObject = GameObject.Find(trampledObjects[i]);
@@ -114,16 +110,24 @@ public class PuzzleControl01 : MonoBehaviour {
                 My_renderer.material = thirdMaterial;
             }
         }
+        trampledObjects.Clear();
+        lastColor = null;
+        isPassedByEntrance = false;
     }
-    public void correctMove(string destinationColor)
+    public void correctMove(string destinationObject)
     {
-        lastColor = destinationColor.Split(' ')[0];
+        lastColor = destinationObject.Split(' ')[0];
         if (lastColor != "Black")
         {
-            print("I will Change "+ destinationColor + " To White");
-            GameObject childObject = GameObject.Find(destinationColor);
+            //print("I will Change "+ destinationObject + " To White");
+            GameObject childObject = GameObject.Find(destinationObject);
             Renderer My_renderer = childObject.GetComponent<Renderer>();
             My_renderer.material = correctMoveMaterial;
         }
+    }
+    public void win()
+    {
+        print("You Win!");
+        fail();
     }
 }
